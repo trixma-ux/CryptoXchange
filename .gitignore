@@ -7,3 +7,8 @@ dev.db-journal
 dist
 build
 .vscode
+logs
+*.log
+*.tsbuildinfo
+uploads/*
+!uploads/.gitkeep
