@@ -87,10 +87,10 @@ export default function DashboardHome() {
               </button>
             </div>
             <div className="text-4xl font-black text-white">
-              {loading ? <div className="skeleton h-10 w-48" /> : hideBalance ? '••••••• FCFA' : formatCurrency(portfolio?.totalValueXOF || 0)}
+              {loading ? <div className="skeleton h-10 w-48" /> : hideBalance ? '••••••• FCFA' : formatCurrency(portfolio?.totalFCFA || 0)}
             </div>
             <div className="text-sm mt-1 font-mono" style={{ color: '#64748b' }}>
-              ≈ {hideBalance ? '•••' : `$${(portfolio?.totalValueUSD || 0).toFixed(2)}`}
+              ≈ {hideBalance ? '•••' : `$${(portfolio?.totalUSD || 0).toFixed(2)}`}
             </div>
           </div>
           <div className="flex items-center gap-1 px-3 py-1 rounded-xl text-sm font-bold" style={{ backgroundColor: 'rgba(16,185,129,0.15)', color: '#10b981' }}>
@@ -192,8 +192,8 @@ export default function DashboardHome() {
           <div className="space-y-3">
             {loading ? (
               Array(4).fill(0).map((_, i) => <div key={i} className="skeleton h-20 w-full rounded-xl" />)
-            ) : portfolio?.wallets?.length ? (
-              portfolio.wallets.slice(0, 5).map((wallet: any, i: number) => (
+            ) : portfolio?.portfolioItems?.length ? (
+              portfolio.portfolioItems.slice(0, 5).map((wallet: any, i: number) => (
                 <motion.div key={wallet.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
                   className="glass-card-hover p-5 flex items-center justify-between">
                   <div className="flex items-center gap-4">
@@ -206,7 +206,7 @@ export default function DashboardHome() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-bold text-white">{formatCurrency(wallet.valueXOF || 0)}</div>
+                    <div className="font-bold text-white">{formatCurrency(wallet.valueFCFA || 0)}</div>
                     <div className="text-sm" style={{ color: '#10b981' }}>≈ ${wallet.valueUSD?.toFixed(2)}</div>
                   </div>
                 </motion.div>

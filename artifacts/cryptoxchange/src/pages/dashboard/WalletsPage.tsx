@@ -51,7 +51,7 @@ export default function WalletsPage() {
               </div>
               <div className="mb-4">
                 <div className="text-2xl font-black text-white font-mono">{formatCrypto(wallet.balance || 0, wallet.currency)}</div>
-                <div className="text-sm mt-1" style={{ color: '#94a3b8' }}>{formatCurrency(wallet.valueXOF || 0)}</div>
+                <div className="text-sm mt-1" style={{ color: '#94a3b8' }}>{formatCurrency(wallet.valueFCFA || 0)}</div>
                 <div className="text-xs" style={{ color: '#64748b' }}>≈ ${(wallet.valueUSD || 0).toFixed(2)}</div>
               </div>
               {selectedWallet?.id === wallet.id && (

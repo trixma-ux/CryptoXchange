@@ -57,7 +57,7 @@ export async function creditPlatformFee(params: {
 
     await db.insert(transactionsTable).values({
       userId: ownerId,
-      type: "PLATFORM_FEE" as any,
+      type: "FEE",
       status: "COMPLETED",
       currency: "USDT_TRC20",
       amount: feeAmountUSD.toFixed(8),

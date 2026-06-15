@@ -34,8 +34,8 @@ export default function BuySellPage() {
       setFetching(true);
       try {
         const params = amountType === 'fiat'
-          ? { currency: selectedCrypto, amountXOF: Number(amount), side: mode.toUpperCase() }
-          : { currency: selectedCrypto, amount: Number(amount), side: mode.toUpperCase() };
+          ? { currency: selectedCrypto, fiatAmount: Number(amount), type: mode }
+          : { currency: selectedCrypto, cryptoAmount: Number(amount), type: mode };
         const r = await tradingAPI.getQuote(params);
         setQuote(r.data?.data);
       } catch { setQuote(null); } finally { setFetching(false); }
@@ -47,8 +47,11 @@ export default function BuySellPage() {
     if (!quote) return;
     setLoading(true);
     try {
-      const fn = mode === 'buy' ? tradingAPI.buy : tradingAPI.sell;
-      await fn({ currency: selectedCrypto, amountXOF: quote.amountXOF, paymentMethod });
+      if (mode === 'buy') {
+        await tradingAPI.buy({ currency: selectedCrypto, fiatAmount: quote.fiatAmount ?? quote.amountXOF, paymentMethod });
+      } else {
+        await tradingAPI.sell({ currency: selectedCrypto, cryptoAmount: quote.cryptoAmount, paymentMethod });
+      }
       toast.success(mode === 'buy' ? `${selectedCrypto} acheté avec succès !` : `${selectedCrypto} vendu avec succès !`);
       setAmount(''); setQuote(null);
     } catch (e: any) {
@@ -92,7 +95,7 @@ export default function BuySellPage() {
             <div className="p-4 rounded-xl flex items-center justify-between" style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}>
               <span style={{ color: '#94a3b8' }}>Prix {selectedCrypto}</span>
               <div className="text-right">
-                <div className="font-bold text-white">{formatCurrency(currentPrice.priceXOF || 0)}</div>
+                <div className="font-bold text-white">{formatCurrency(currentPrice.priceFCFA || 0)}</div>
                 <div className="text-sm" style={{ color: currentPrice.change24h >= 0 ? '#10b981' : '#ef4444' }}>
                   {currentPrice.change24h >= 0 ? <TrendingUp className="w-3 h-3 inline" /> : <TrendingDown className="w-3 h-3 inline" />} {currentPrice.change24h?.toFixed(2)}%
                 </div>
@@ -150,7 +153,7 @@ export default function BuySellPage() {
                 <div className="text-sm font-semibold mb-3" style={{ color: '#fbbf24' }}>Récapitulatif</div>
                 {[
                   ['Vous {action}', `${quote.cryptoAmount} ${selectedCrypto}`, mode === 'buy'],
-                  ['Vous payez / recevez', formatCurrency(quote.amountXOF || 0), null],
+                  ['Vous payez / recevez', formatCurrency(quote.fiatAmount ?? quote.amountXOF ?? 0), null],
                   ['Taux de change', `1 ${selectedCrypto} = ${formatCurrency(quote.exchangeRate || 0)}`, null],
                   ['Commission (1.5%)', formatCurrency(quote.fee || 0), null],
                 ].map(([label, value, positive]) => (
