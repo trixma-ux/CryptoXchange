@@ -143,7 +143,7 @@ export default function TradeScreen() {
           {currentPrice && (
             <View style={s.priceRight}>
               <Text style={s.usdLabel}>${currentPrice.priceUSD < 1 ? currentPrice.priceUSD.toFixed(4) : currentPrice.priceUSD.toLocaleString("en-US")}</Text>
-              <Text style={[s.sourceTag, { color: currentPrice.source === "live" ? "#10b981" : c.mutedForeground }]}>
+              <Text style={[s.sourceTag, { color: currentPrice.source === "live" ? "#10b981" : colors.mutedForeground }]}>
                 {currentPrice.source === "live" ? "● Live" : "● Mock"}
               </Text>
             </View>

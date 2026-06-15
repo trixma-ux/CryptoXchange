@@ -40,7 +40,7 @@ export const initCinetPayPayment = async (params: CinetPayInitParams) => {
     customer_state: "CI",
     customer_zip_code: "00225",
     notify_url: `${domain}/api/v1/payments/webhook/cinetpay`,
-    return_url: `${domain}/dashboard/deposits?status=success`,
+    return_url: `${domain}/dashboard/deposit?status=success`,
     channels: params.channels || "ALL",
     metadata: params.transactionId,
     lang: "FR",
