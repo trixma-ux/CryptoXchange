@@ -1,20 +1,44 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import { TrendingUp, TrendingDown, Wallet, ArrowDownLeft, ArrowUpRight, Repeat, ShoppingCart, Eye, EyeOff } from 'lucide-react';
-import { walletsAPI, tradingAPI, transactionsAPI } from '@/lib/api';
+import { TrendingUp, TrendingDown, Wallet, ArrowDownLeft, ArrowUpRight, Repeat, ShoppingCart, Eye, EyeOff, RefreshCw } from 'lucide-react';
+import { walletsAPI, tradingAPI, transactionsAPI, pricesAPI } from '@/lib/api';
 import { formatCurrency, formatCrypto } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { Link } from 'wouter';
 import { useAuthStore } from '@/lib/store';
 
-const CRYPTO_COLORS: Record<string, string> = { BTC: '#f7931a', ETH: '#627eea', USDT: '#26a17b', BNB: '#f3ba2f', SOL: '#9945ff', LTC: '#bfbbbb' };
+const CRYPTO_COLORS: Record<string, string> = {
+  BTC: '#f7931a', ETH: '#627eea', USDT: '#26a17b', USDT_TRC20: '#26a17b',
+  USDT_ERC20: '#26a17b', BNB: '#f3ba2f', SOL: '#9945ff', LTC: '#bfbbbb',
+  XRP: '#00aae4', MATIC: '#8247e5', DOGE: '#c2a633',
+};
+
+function formatPriceFCFA(n: number): string {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + 'M';
+  if (n >= 1_000) return n.toLocaleString('fr-FR', { maximumFractionDigits: 0 });
+  return n.toFixed(2);
+}
 
 export default function DashboardHome() {
   const { user } = useAuthStore();
   const [portfolio, setPortfolio] = useState<any>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [prices, setPrices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pricesLoading, setPricesLoading] = useState(true);
   const [hideBalance, setHideBalance] = useState(false);
+  const [lastPriceUpdate, setLastPriceUpdate] = useState<Date | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const fetchPrices = async () => {
+    try {
+      const res = await pricesAPI.getPrices();
+      setPrices(res.data?.data || []);
+      setLastPriceUpdate(new Date());
+    } catch {} finally {
+      setPricesLoading(false);
+    }
+  };
 
   useEffect(() => {
     Promise.all([
@@ -24,6 +48,10 @@ export default function DashboardHome() {
       setPortfolio(portfolioRes?.data?.data || null);
       setTransactions(txRes?.data?.data?.transactions || []);
     }).finally(() => setLoading(false));
+
+    fetchPrices();
+    intervalRef.current = setInterval(fetchPrices, 30_000);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, []);
 
   const QUICK_ACTIONS = [
@@ -33,6 +61,10 @@ export default function DashboardHome() {
     { href: '/dashboard/deposit', icon: ArrowDownLeft, label: 'Déposer', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
     { href: '/dashboard/withdraw', icon: ArrowUpRight, label: 'Retirer', color: '#8b5cf6', bg: 'rgba(139,92,246,0.15)' },
   ];
+
+  const topPrices = prices.filter(p =>
+    ['BTC', 'ETH', 'BNB', 'SOL', 'XRP', 'DOGE'].includes(p.currency)
+  ).slice(0, 6);
 
   return (
     <DashboardLayout title="Tableau de bord">
@@ -63,7 +95,7 @@ export default function DashboardHome() {
           </div>
           <div className="flex items-center gap-1 px-3 py-1 rounded-xl text-sm font-bold" style={{ backgroundColor: 'rgba(16,185,129,0.15)', color: '#10b981' }}>
             <TrendingUp className="w-4 h-4" />
-            +2.34%
+            {prices[0]?.source === 'live' ? 'Live' : '+2.34%'}
           </div>
         </div>
 
@@ -79,6 +111,74 @@ export default function DashboardHome() {
               </motion.div>
             </Link>
           ))}
+        </div>
+      </motion.div>
+
+      {/* Live Market Prices */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <h3 className="text-lg font-bold text-white">Marchés en direct</h3>
+            <div className="flex items-center gap-2">
+              <span style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: '#10b981', boxShadow: '0 0 6px #10b981', display: 'inline-block', animation: 'pulse 2s infinite' }} />
+              <span style={{ fontSize: 11, color: '#10b981', fontWeight: 600 }}>
+                {prices[0]?.source === 'live' ? 'Temps réel' : 'Chargement...'}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {lastPriceUpdate && (
+              <span style={{ fontSize: 11, color: '#475569' }}>
+                {lastPriceUpdate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+              </span>
+            )}
+            <button onClick={fetchPrices} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#475569', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <RefreshCw className="w-3 h-3" />
+            </button>
+            <Link href="/dashboard/buy-sell" className="text-sm font-medium" style={{ color: '#fbbf24', textDecoration: 'none' }}>Trader →</Link>
+          </div>
+        </div>
+
+        {pricesLoading ? (
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+            {Array(6).fill(0).map((_, i) => <div key={i} className="skeleton h-16 rounded-xl" />)}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+            {topPrices.map((p: any) => {
+              const positive = p.change24h >= 0;
+              const color = CRYPTO_COLORS[p.currency] || '#f59e0b';
+              return (
+                <Link key={p.currency} href={`/dashboard/buy-sell?crypto=${p.currency}`} style={{ textDecoration: 'none' }}>
+                  <motion.div whileHover={{ scale: 1.02 }} className="glass-card-hover p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-black" style={{ backgroundColor: color + '22', color }}>
+                        {p.currency[0]}
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold text-white">{p.currency.replace('_TRC20', '').replace('_ERC20', '')}</div>
+                        <div style={{ fontSize: 11, color: '#64748b' }}>
+                          ${p.priceUSD < 1 ? p.priceUSD.toFixed(4) : p.priceUSD.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs font-semibold" style={{ color: positive ? '#10b981' : '#ef4444' }}>
+                        {positive ? '▲' : '▼'} {Math.abs(p.change24h).toFixed(2)}%
+                      </div>
+                      <div style={{ fontSize: 11, color: '#475569', marginTop: 2 }}>
+                        {formatPriceFCFA(p.priceFCFA)} FCFA
+                      </div>
+                    </div>
+                  </motion.div>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+
+        <div style={{ textAlign: 'right', marginTop: 10, fontSize: 10, color: '#1e293b' }}>
+          Source: CoinGecko · Mise à jour toutes les 30s
         </div>
       </motion.div>
 
@@ -157,6 +257,8 @@ export default function DashboardHome() {
           </div>
         </div>
       </div>
+
+      <style>{`@keyframes pulse { 0%,100%{ opacity:1 } 50%{ opacity:0.4 } }`}</style>
     </DashboardLayout>
   );
 }

@@ -1,2 +1,4 @@
 - [Landing page design](landing-design.md) — white/purple Trust Wallet-inspired design (switched from dark amber)
 - [Platform fee system](platform-fees.md) — automatic commissions credited to owner on every deposit/withdrawal/trade
+- [CoinGecko prix live](coingecko-prices.md) — intégration gratuite sans clé, cache 30s, fallback MOCK_PRICES si erreur réseau
+- [App mobile Expo auth flow](mobile-auth-flow.md) — AsyncStorage pour JWT, refresh token automatique sur 401 dans lib/api.ts
