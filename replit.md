@@ -5,10 +5,11 @@ Plateforme web d'achat, vente et échange de cryptomonnaies avec support Mobile 
 ## Run & Operate
 
 - `pnpm --filter @workspace/cryptoxchange run dev` — frontend Vite (port 20409, preview path `/`)
-- `pnpm --filter @workspace/api-server run dev` — API Express backend (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — API Express backend (port 8080)
 - `pnpm run typecheck` — typecheck complet
 - `pnpm run build` — typecheck + build all
-- Required env: `DATABASE_URL`, `VITE_API_URL` (optionnel, défaut `/api/v1`)
+- Required env: `DATABASE_URL` (obligatoire), `JWT_SECRET`, `JWT_REFRESH_SECRET` (optionnels, défaut dev only), `VITE_API_URL` (optionnel, défaut `/api/v1`)
+- En dev: le frontend proxy `/api/v1/*` vers `localhost:8080` (Vite proxy)
 
 ## Stack
 
@@ -27,7 +28,10 @@ Plateforme web d'achat, vente et échange de cryptomonnaies avec support Mobile 
 - `artifacts/cryptoxchange/src/lib/api.ts` — tous les appels API (axios, interceptors JWT)
 - `artifacts/cryptoxchange/src/lib/store.ts` — Zustand auth store (persist)
 - `artifacts/cryptoxchange/src/index.css` — thème global (dark crypto, amber brand, composants CSS)
-- `artifacts/api-server/` — backend Express
+- `artifacts/api-server/src/modules/` — tous les modules backend (auth, wallets, transactions, trading, swap, payments, kyc, notifications, support, admin, prices)
+- `artifacts/api-server/src/lib/` — config, helpers, jwt utils
+- `artifacts/api-server/src/middlewares/` — authenticate, requireAdmin, errorHandler
+- `lib/db/src/schema/index.ts` — schéma Drizzle complet (users, wallets, transactions, kyc, support, notifications, fees)
 
 ## Architecture decisions
 
@@ -36,6 +40,9 @@ Plateforme web d'achat, vente et échange de cryptomonnaies avec support Mobile 
 - CSS entièrement custom via `@layer components` dans index.css — pas de shadcn/ui pour les pages métier
 - Pages admin avec AdminLayout inline (évite import circulaire) — à refactoriser si beaucoup de pages admin
 - API pointée vers `/api/v1` par défaut — configurable via `VITE_API_URL`
+- Backend Express 5 avec Drizzle ORM (adapté depuis Prisma du backup)
+- Schéma DB poussé via `pnpm --filter @workspace/db run push`
+- JWT access (15min) + refresh (7j) stockés côté client
 
 ## Product
 
@@ -61,9 +68,13 @@ Plateforme web d'achat, vente et échange de cryptomonnaies avec support Mobile 
 
 ## Gotchas
 
-- Le frontend appelle le backend sur `VITE_API_URL` — configurer cette variable en production
+- **En dev**: Vite proxy `/api/v1/*` → `localhost:8080` automatiquement (pas besoin de `VITE_API_URL`)
+- **En prod**: configurer `VITE_API_URL` pour pointer vers le backend déployé
 - Les pages admin ont AdminLayout dupliqué inline — à extraire dans un composant partagé si besoin
 - `@workspace/api-client-react` est présent en dépendance mais non utilisé (lib codegen non configurée pour ce projet)
+- `JWT_SECRET` et `JWT_REFRESH_SECRET` ont des fallback dev — CHANGER EN PRODUCTION
+- `express-async-errors` supprimé (incompatible Express 5) — Express 5 gère les erreurs async nativement
+- Les prix crypto sont simulés (MOCK_PRICES) — intégrer CoinGecko API en production
 
 ## Pointers
 
