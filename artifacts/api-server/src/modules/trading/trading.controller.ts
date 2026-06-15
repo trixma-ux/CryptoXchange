@@ -3,6 +3,7 @@ import { db } from "@workspace/db";
 import { walletsTable, transactionsTable } from "@workspace/db";
 import { eq, and } from "drizzle-orm";
 import { sendSuccess, sendError, calculateFee, MOCK_PRICES, FCFA_PER_USD } from "../../lib/helpers.js";
+import { creditPlatformFee, PLATFORM_FEES } from "../../lib/platform-fees.js";
 import { AuthRequest } from "../../middlewares/auth.js";
 import { config } from "../../lib/config.js";
 
@@ -73,6 +74,13 @@ export const buyCrypto = async (req: AuthRequest, res: Response) => {
     description: `Achat ${cryptoAmount.toFixed(8)} ${currency}`,
   }).returning();
 
+  const feeFcfa = fiatCurrency === "XOF" ? feeUSD * FCFA_PER_USD : feeUSD;
+  await creditPlatformFee({
+    feeAmountFcfa: feeFcfa,
+    sourceType: "TRADE_BUY",
+    description: `Achat ${cryptoAmount.toFixed(6)} ${currency} — ${fiatAmountNum} ${fiatCurrency}`,
+  });
+
   return sendSuccess(res, {
     transaction: tx,
     summary: { cryptoAmount, fiatAmount: fiatAmountNum, feeUSD, netUSD, exchangeRate: priceUSD, fiatCurrency },
@@ -126,6 +134,13 @@ export const sellCrypto = async (req: AuthRequest, res: Response) => {
     fiatCurrency, fiatAmount: fiatAmount.toString(), exchangeRate: priceUSD.toString(),
     description: `Vente ${cryptoAmountNum.toFixed(8)} ${currency}`,
   }).returning();
+
+  const feeFcfa = fiatCurrency === "XOF" ? feeUSD * FCFA_PER_USD : feeUSD;
+  await creditPlatformFee({
+    feeAmountFcfa: feeFcfa,
+    sourceType: "TRADE_SELL",
+    description: `Vente ${cryptoAmountNum.toFixed(6)} ${currency} — ${fiatAmount.toFixed(0)} ${fiatCurrency}`,
+  });
 
   return sendSuccess(res, {
     transaction: tx,

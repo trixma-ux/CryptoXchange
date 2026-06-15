@@ -5,7 +5,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
-import { Bitcoin, Eye, EyeOff, Lock, Mail, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, Loader2 } from 'lucide-react';
+import PremiumLogo from '@/components/PremiumLogo';
 import { authAPI } from '@/lib/api';
 import { useAuthStore } from '@/lib/store';
 
@@ -56,11 +57,8 @@ export default function LoginPage() {
     <div className="min-h-screen bg-dots flex items-center justify-center p-4" style={{ backgroundColor: '#080d1a' }}>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: 'rgba(245,158,11,0.05)' }} />
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md relative">
-        <Link href="/" className="flex items-center justify-center gap-2 mb-8" style={{ textDecoration: 'none' }}>
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
-            <Bitcoin className="w-6 h-6 text-black" />
-          </div>
-          <span className="text-2xl font-black gradient-text">CryptoXchange</span>
+        <Link href="/" className="flex items-center justify-center mb-8" style={{ textDecoration: 'none' }}>
+          <PremiumLogo size={38} textSize={22} />
         </Link>
         <div className="glass-card p-8">
           <h1 className="text-2xl font-black text-white mb-2">Bon retour 👋</h1>

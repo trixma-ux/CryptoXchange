@@ -1,8 +1,9 @@
 import { Link, useLocation } from 'wouter';
-import { LayoutDashboard, Wallet, ArrowLeftRight, Repeat, Download, Upload, History, UserCircle, LifeBuoy, Settings, Bitcoin, LogOut } from 'lucide-react';
+import { LayoutDashboard, Wallet, ArrowLeftRight, Repeat, Download, Upload, History, UserCircle, LifeBuoy, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/lib/store';
 import { authAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
+import PremiumLogo from '@/components/PremiumLogo';
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Vue d\'ensemble', icon: LayoutDashboard },
@@ -38,11 +39,8 @@ export default function Sidebar() {
   return (
     <aside className="fixed hidden md:flex flex-col w-64 h-screen z-40" style={{ backgroundColor: '#0f172a', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
       <div className="h-16 flex items-center px-6" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <Link href="/dashboard" className="flex items-center gap-2" style={{ textDecoration: 'none' }}>
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
-            <Bitcoin className="w-5 h-5 text-black" />
-          </div>
-          <span className="text-xl font-black gradient-text">CryptoXchange</span>
+        <Link href="/dashboard" style={{ textDecoration: 'none' }}>
+          <PremiumLogo size={32} textSize={17} />
         </Link>
       </div>
 

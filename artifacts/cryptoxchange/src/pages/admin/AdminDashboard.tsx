@@ -4,7 +4,8 @@ import { adminAPI } from '@/lib/api';
 import { useAuthStore } from '@/lib/store';
 import { formatCurrency } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { Users, TrendingUp, DollarSign, Shield, ArrowUpRight, ArrowDownLeft, Clock, CheckCircle, XCircle, Bitcoin, LayoutDashboard, FileText, UserCheck, Settings, LifeBuoy, LogOut } from 'lucide-react';
+import { Users, TrendingUp, DollarSign, ArrowUpRight, ArrowDownLeft, Clock, CheckCircle, XCircle, LayoutDashboard, FileText, UserCheck, LifeBuoy, LogOut } from 'lucide-react';
+import PremiumLogo from '@/components/PremiumLogo';
 
 const ADMIN_NAV = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -22,13 +23,8 @@ function AdminLayout({ children, title }: { children: React.ReactNode; title?: s
     <div className="min-h-screen" style={{ backgroundColor: '#080d1a' }}>
       <aside className="fixed hidden md:flex flex-col w-64 h-screen z-40" style={{ backgroundColor: '#0f172a', borderRight: '1px solid rgba(255,255,255,0.05)' }}>
         <div className="h-16 flex items-center px-6 gap-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
-            <Bitcoin className="w-5 h-5 text-black" />
-          </div>
-          <div>
-            <div className="font-black text-white text-sm">CryptoXchange</div>
-            <div className="text-xs px-1.5 py-0.5 rounded font-bold" style={{ backgroundColor: 'rgba(245,158,11,0.2)', color: '#fbbf24' }}>ADMIN</div>
-          </div>
+          <PremiumLogo size={30} textSize={15} />
+          <div className="text-xs px-1.5 py-0.5 rounded font-bold ml-1" style={{ backgroundColor: 'rgba(99,102,241,0.2)', color: '#a5b4fc' }}>ADMIN</div>
         </div>
         <div className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
           {ADMIN_NAV.map(({ href, label, icon: Icon }) => (

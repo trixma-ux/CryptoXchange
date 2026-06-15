@@ -28,7 +28,7 @@ export default function DashboardLayout({ children, title }: Props) {
             </button>
             <Link href="/dashboard/profile" style={{ textDecoration: 'none' }}>
               <div className="flex items-center gap-3 p-2 rounded-xl cursor-pointer" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-black" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold text-white" style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>
                   {user?.firstName?.[0]}{user?.lastName?.[0]}
                 </div>
                 <div className="hidden sm:block">

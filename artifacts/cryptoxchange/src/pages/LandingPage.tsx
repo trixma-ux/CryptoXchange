@@ -1,9 +1,9 @@
 import { Link } from 'wouter';
 import { motion } from 'framer-motion';
 import {
-  TrendingUp, Shield, Zap, Globe, ArrowRight, ChevronRight,
-  Smartphone, Repeat2, Banknote, Lock, CheckCircle2, Star
+  TrendingUp, Shield, Zap, Globe, ArrowRight, ChevronRight, Star
 } from 'lucide-react';
+import PremiumLogo from '@/components/PremiumLogo';
 
 const CRYPTO_TICKERS = [
   { symbol: 'BTC', price: '95,000', change: '+2.34%', positive: true, color: '#f7931a' },
@@ -49,11 +49,8 @@ export default function LandingPage() {
         display: 'flex', alignItems: 'center',
       }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ color: 'white', fontWeight: 900, fontSize: 16 }}>₿</span>
-            </div>
-            <span style={{ fontWeight: 900, fontSize: 20, color: '#0f172a', letterSpacing: '-0.5px' }}>CryptoXchange</span>
+          <Link href="/" style={{ textDecoration: 'none' }}>
+            <PremiumLogo size={34} textSize={20} />
           </Link>
 
           <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
@@ -359,12 +356,7 @@ export default function LandingPage() {
       {/* ── FOOTER ── */}
       <footer style={{ borderTop: '1px solid #e2e8f0', padding: '48px 24px', backgroundColor: 'white' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 32, height: 32, borderRadius: 9, background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ color: 'white', fontWeight: 900, fontSize: 15 }}>₿</span>
-            </div>
-            <span style={{ fontWeight: 900, fontSize: 18, color: '#0f172a' }}>CryptoXchange</span>
-          </div>
+          <PremiumLogo size={30} textSize={17} />
           <p style={{ fontSize: 13, color: '#94a3b8' }}>© 2025 CryptoXchange. Tous droits réservés.</p>
           <div style={{ display: 'flex', gap: 24 }}>
             {['CGU', 'Confidentialité', 'Support'].map(item => (

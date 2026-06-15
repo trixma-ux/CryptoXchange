@@ -1,1 +1,2 @@
-- [Landing page redesign](landing-design.md) — switched from dark amber crypto theme to clean white/purple Trust Wallet-inspired design
+- [Landing page design](landing-design.md) — white/purple Trust Wallet-inspired design (switched from dark amber)
+- [Platform fee system](platform-fees.md) — automatic commissions credited to owner on every deposit/withdrawal/trade
