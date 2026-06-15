@@ -9,9 +9,13 @@ import { config } from "../../lib/config.js";
 export const getSwapHistory = async (req: AuthRequest, res: Response) => {
   const { db } = await import("@workspace/db");
   const { transactionsTable } = await import("@workspace/db");
-  const { eq, desc } = await import("drizzle-orm");
+  const { eq, and, desc } = await import("drizzle-orm");
+  const userId = req.user!.id;
   const rows = await db.select().from(transactionsTable)
-    .where(eq(transactionsTable.type, "SWAP"))
+    .where(and(
+      eq(transactionsTable.userId, userId),
+      eq(transactionsTable.type, "SWAP")
+    ))
     .orderBy(desc(transactionsTable.createdAt)).limit(50);
   return sendSuccess(res, rows, "Historique swap récupéré");
 };

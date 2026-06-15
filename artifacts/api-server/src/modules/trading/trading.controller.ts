@@ -15,9 +15,13 @@ export const getUnifiedQuote = async (req: AuthRequest, res: Response) => {
 export const getHistory = async (req: AuthRequest, res: Response) => {
   const { db } = await import("@workspace/db");
   const { transactionsTable } = await import("@workspace/db");
-  const { eq, or, desc } = await import("drizzle-orm");
+  const { eq, or, and, desc } = await import("drizzle-orm");
+  const userId = req.user!.id;
   const rows = await db.select().from(transactionsTable)
-    .where(or(eq(transactionsTable.type, "TRADE_BUY"), eq(transactionsTable.type, "TRADE_SELL")))
+    .where(and(
+      eq(transactionsTable.userId, userId),
+      or(eq(transactionsTable.type, "TRADE_BUY"), eq(transactionsTable.type, "TRADE_SELL"))
+    ))
     .orderBy(desc(transactionsTable.createdAt)).limit(50);
   return sendSuccess(res, rows, "Historique de trading récupéré");
 };
