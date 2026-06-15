@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "QpOtiOylvRYSBcyWIyf63"
+uri = "file://artifacts/cryptoxchange-promo/public/phone-mockup.png"
+type = "image"
+title = "Dark theme crypto app phone"

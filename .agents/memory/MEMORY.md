@@ -1,0 +1,1 @@
+- [Replit artifact port registration](replit-artifact-port-registration.md) — missing [[ports]] entry in .replit causes workflow health check to always fail even when Vite starts correctly.
