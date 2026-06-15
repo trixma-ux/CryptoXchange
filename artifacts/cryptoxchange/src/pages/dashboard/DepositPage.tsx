@@ -29,11 +29,21 @@ export default function DepositPage() {
     if (!amount || !phone) { toast.error('Remplissez tous les champs'); return; }
     setLoading(true);
     try {
-      const r = await paymentsAPI.mobileMoneyDeposit({ provider, phone, amount: Number(amount) });
-      setSuccess(r.data?.data);
+      const r = await paymentsAPI.mobileMoneyDeposit({ provider, phone, phoneNumber: phone, amount: Number(amount), cryptoCurrency: selectedCrypto });
+      const data = r.data?.data;
+      if (data?.paymentUrl) {
+        toast.success('Redirection vers CinetPay...');
+        window.open(data.paymentUrl, '_blank');
+      }
+      setSuccess(data);
       toast.success('Demande de dépôt envoyée !');
     } catch (e: any) {
-      toast.error(e.response?.data?.message || 'Erreur lors du dépôt');
+      const code = e.response?.data?.code;
+      if (code === 'KYC_REQUIRED') {
+        toast.error('Vérification KYC requise. Complétez votre KYC d\'abord.');
+      } else {
+        toast.error(e.response?.data?.message || 'Erreur lors du dépôt');
+      }
     } finally { setLoading(false); }
   };
 

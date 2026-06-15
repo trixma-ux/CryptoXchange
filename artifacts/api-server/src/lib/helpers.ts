@@ -31,8 +31,10 @@ export const generateWalletAddress = (currency: string): string => {
 };
 
 export const MOCK_PRICES: Record<string, number> = {
-  BTC: 95000, ETH: 3400, USDT_TRC20: 1, USDT_ERC20: 1, USDT_BEP20: 1,
+  BTC: 95000, ETH: 3400,
+  USDT: 1, USDT_TRC20: 1, USDT_ERC20: 1, USDT_BEP20: 1,
   BNB: 620, SOL: 185, LTC: 105, XRP: 2.1, MATIC: 0.95, DOGE: 0.35,
+  ADA: 0.45,
 };
 
 export const FCFA_PER_USD = 605;

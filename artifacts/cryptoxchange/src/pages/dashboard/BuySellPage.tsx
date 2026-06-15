@@ -25,7 +25,12 @@ export default function BuySellPage() {
   const [paymentMethod, setPaymentMethod] = useState('orange_money');
 
   useEffect(() => {
-    pricesAPI.getPrices().then(r => setPrices(r.data?.data || {})).catch(() => {});
+    pricesAPI.getPrices().then(r => {
+      const raw: any[] = r.data?.data || [];
+      const map: Record<string, any> = {};
+      raw.forEach((p: any) => { map[p.currency] = p; });
+      setPrices(map);
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -55,7 +60,13 @@ export default function BuySellPage() {
       toast.success(mode === 'buy' ? `${selectedCrypto} acheté avec succès !` : `${selectedCrypto} vendu avec succès !`);
       setAmount(''); setQuote(null);
     } catch (e: any) {
-      toast.error(e.response?.data?.message || 'Erreur lors de la transaction');
+      const code = e.response?.data?.code;
+      if (code === 'KYC_REQUIRED') {
+        toast.error('Vérification KYC requise avant toute transaction.');
+        setTimeout(() => window.location.href = '/dashboard/kyc', 1500);
+      } else {
+        toast.error(e.response?.data?.message || 'Erreur lors de la transaction');
+      }
     } finally { setLoading(false); }
   };
 

@@ -5,7 +5,7 @@ import { usersTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 
 export interface AuthRequest extends Request {
-  user?: { id: string; email: string; role: string };
+  user?: { id: string; email: string; role: string; kycStatus: string };
 }
 
 export const authenticate = async (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -18,7 +18,8 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
     const decoded = verifyAccessToken(token);
 
     const users = await db.select({
-      id: usersTable.id, email: usersTable.email, role: usersTable.role, status: usersTable.status,
+      id: usersTable.id, email: usersTable.email, role: usersTable.role,
+      status: usersTable.status, kycStatus: usersTable.kycStatus,
     }).from(usersTable).where(eq(usersTable.id, decoded.userId)).limit(1);
 
     const user = users[0];
@@ -27,11 +28,24 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
       return res.status(403).json({ success: false, message: "Compte suspendu ou banni" });
     }
 
-    req.user = { id: user.id, email: user.email, role: user.role };
+    req.user = { id: user.id, email: user.email, role: user.role, kycStatus: user.kycStatus ?? "PENDING" };
     next();
   } catch {
     return res.status(401).json({ success: false, message: "Token invalide ou expiré" });
   }
+};
+
+export const requireKyc = (req: AuthRequest, res: Response, next: NextFunction) => {
+  const role = req.user?.role;
+  if (role === "ADMIN" || role === "SUPER_ADMIN") return next();
+  if (req.user?.kycStatus !== "VERIFIED") {
+    return res.status(403).json({
+      success: false,
+      message: "Vérification KYC requise pour effectuer des transactions.",
+      code: "KYC_REQUIRED",
+    });
+  }
+  next();
 };
 
 export const requireAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {

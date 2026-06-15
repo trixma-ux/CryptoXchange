@@ -194,7 +194,7 @@ export default function DashboardHome() {
               Array(4).fill(0).map((_, i) => <div key={i} className="skeleton h-20 w-full rounded-xl" />)
             ) : portfolio?.portfolioItems?.length ? (
               portfolio.portfolioItems.slice(0, 5).map((wallet: any, i: number) => (
-                <motion.div key={wallet.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
+                <motion.div key={wallet.currency} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
                   className="glass-card-hover p-5 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-black text-black" style={{ backgroundColor: CRYPTO_COLORS[wallet.currency] || '#f59e0b' }}>
