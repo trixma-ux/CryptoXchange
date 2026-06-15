@@ -7,5 +7,7 @@ router.use(authenticate);
 
 router.get("/quote", ctrl.getSwapQuote);
 router.post("/execute", ctrl.executeSwap);
+router.post("/", ctrl.executeSwap);
+router.get("/history", ctrl.getSwapHistory);
 
 export default router;

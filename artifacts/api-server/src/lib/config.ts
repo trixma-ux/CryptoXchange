@@ -1,11 +1,24 @@
+const isProduction = process.env.NODE_ENV === "production";
+
+const requireSecret = (name: string, fallback: string): string => {
+  const val = process.env[name];
+  if (!val) {
+    if (isProduction) {
+      throw new Error(`${name} environment variable is required in production`);
+    }
+    return fallback;
+  }
+  return val;
+};
+
 export const config = {
   nodeEnv: process.env.NODE_ENV || "development",
   frontendUrl: process.env.FRONTEND_URL || "*",
   appName: "CryptoXchange",
 
   jwt: {
-    secret: process.env.JWT_SECRET || "cryptoxchange_jwt_secret_dev_only_change_in_prod",
-    refreshSecret: process.env.JWT_REFRESH_SECRET || "cryptoxchange_refresh_secret_dev_only_change_in_prod",
+    secret: requireSecret("JWT_SECRET", "dev_jwt_secret_change_in_production_not_safe"),
+    refreshSecret: requireSecret("JWT_REFRESH_SECRET", "dev_refresh_secret_change_in_production_not_safe"),
     expiresIn: "15m",
     refreshExpiresIn: "7d",
   },

@@ -5,6 +5,7 @@ import { logger } from "./lib/logger.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 import authRoutes from "./modules/auth/auth.routes.js";
+import usersRoutes from "./modules/users/users.routes.js";
 import walletsRoutes from "./modules/wallets/wallets.routes.js";
 import transactionsRoutes from "./modules/transactions/transactions.routes.js";
 import tradingRoutes from "./modules/trading/trading.routes.js";
@@ -36,6 +37,7 @@ app.use("/uploads", express.static("./uploads"));
 
 const API = "/api/v1";
 app.use(`${API}/auth`, authRoutes);
+app.use(`${API}/users`, usersRoutes);
 app.use(`${API}/wallets`, walletsRoutes);
 app.use(`${API}/transactions`, transactionsRoutes);
 app.use(`${API}/trading`, tradingRoutes);

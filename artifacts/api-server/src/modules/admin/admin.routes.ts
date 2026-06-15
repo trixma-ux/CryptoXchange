@@ -5,17 +5,26 @@ import { authenticate, requireAdmin } from "../../middlewares/auth.js";
 const router = Router();
 router.use(authenticate, requireAdmin);
 
+router.get("/dashboard", ctrl.getDashboardStats);
 router.get("/stats", ctrl.getDashboardStats);
+
 router.get("/users", ctrl.getAllUsers);
 router.get("/users/:userId", ctrl.getUser);
 router.patch("/users/:userId/status", ctrl.updateUserStatus);
+
 router.get("/kyc", ctrl.getKycRequests);
 router.post("/kyc/:documentId/review", ctrl.reviewKyc);
+router.patch("/kyc/:documentId/review", ctrl.reviewKyc);
+
 router.get("/transactions", ctrl.getAllTransactions);
 router.post("/transactions/:txId/approve", ctrl.approveTransaction);
 router.post("/transactions/:txId/reject", ctrl.rejectTransaction);
+router.patch("/transactions/:txId/review", ctrl.reviewTransaction);
+
 router.get("/fees", ctrl.getFees);
+router.post("/fees", ctrl.upsertFee);
 router.put("/fees/:type", ctrl.updateFee);
+
 router.get("/support/tickets", ctrl.getSupportTickets);
 router.post("/support/tickets/:ticketId/reply", ctrl.adminReplyTicket);
 router.patch("/support/tickets/:ticketId/resolve", ctrl.resolveTicket);

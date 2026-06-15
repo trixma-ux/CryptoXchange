@@ -1,1 +1,1 @@
-- [CryptoXchange backend port](cryptoxchange-backend.md) — Express/Drizzle backend fully ported; key gotchas about Express 5 + uuid + proxy setup.
+- [Landing page redesign](landing-design.md) — switched from dark amber crypto theme to clean white/purple Trust Wallet-inspired design

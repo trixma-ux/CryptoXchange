@@ -192,6 +192,18 @@ export const updateFee = async (req: Request, res: Response) => {
   return sendSuccess(res, fee, "Frais mis à jour");
 };
 
+export const reviewTransaction = async (req: Request, res: Response) => {
+  const { txId } = req.params;
+  const { action } = req.body;
+  const status = action === "approve" ? "COMPLETED" : "FAILED";
+  const [tx] = await db.update(transactionsTable).set({ status, processedAt: new Date(), updatedAt: new Date() })
+    .where(eq(transactionsTable.id, txId)).returning();
+  if (!tx) return sendError(res, "Transaction introuvable", 404);
+  return sendSuccess(res, tx, `Transaction ${action === "approve" ? "approuvée" : "rejetée"}`);
+};
+
+export const upsertFee = updateFee;
+
 export const getSupportTickets = async (req: Request, res: Response) => {
   const { page = "1", limit = "20", status } = req.query as Record<string, string>;
   const pageNum = parseInt(page);

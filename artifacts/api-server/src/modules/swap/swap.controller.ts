@@ -6,6 +6,16 @@ import { sendSuccess, sendError, calculateFee, MOCK_PRICES } from "../../lib/hel
 import { AuthRequest } from "../../middlewares/auth.js";
 import { config } from "../../lib/config.js";
 
+export const getSwapHistory = async (req: AuthRequest, res: Response) => {
+  const { db } = await import("@workspace/db");
+  const { transactionsTable } = await import("@workspace/db");
+  const { eq, desc } = await import("drizzle-orm");
+  const rows = await db.select().from(transactionsTable)
+    .where(eq(transactionsTable.type, "SWAP"))
+    .orderBy(desc(transactionsTable.createdAt)).limit(50);
+  return sendSuccess(res, rows, "Historique swap récupéré");
+};
+
 export const getSwapQuote = async (req: AuthRequest, res: Response) => {
   const { fromCurrency, toCurrency, fromAmount } = req.query as Record<string, string>;
   const fromPrice = MOCK_PRICES[fromCurrency];

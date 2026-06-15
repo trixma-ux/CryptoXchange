@@ -1,249 +1,379 @@
 import { Link } from 'wouter';
 import { motion } from 'framer-motion';
-import { TrendingUp, Shield, Zap, Globe, ArrowRight, Bitcoin, ChevronRight } from 'lucide-react';
+import {
+  TrendingUp, Shield, Zap, Globe, ArrowRight, ChevronRight,
+  Smartphone, Repeat2, Banknote, Lock, CheckCircle2, Star
+} from 'lucide-react';
 
 const CRYPTO_TICKERS = [
-  { symbol: 'BTC', name: 'Bitcoin', price: '95,000 FCFA', change: '+2.34%', positive: true },
-  { symbol: 'ETH', name: 'Ethereum', price: '2,057,000 FCFA', change: '+1.87%', positive: true },
-  { symbol: 'USDT', name: 'Tether', price: '605 FCFA', change: '+0.01%', positive: true },
-  { symbol: 'BNB', name: 'BNB', price: '375,100 FCFA', change: '-0.45%', positive: false },
-  { symbol: 'SOL', name: 'Solana', price: '111,925 FCFA', change: '+3.12%', positive: true },
-  { symbol: 'LTC', name: 'Litecoin', price: '63,525 FCFA', change: '-1.23%', positive: false },
+  { symbol: 'BTC', price: '95,000', change: '+2.34%', positive: true, color: '#f7931a' },
+  { symbol: 'ETH', price: '2,057,000', change: '+1.87%', positive: true, color: '#627eea' },
+  { symbol: 'USDT', price: '605', change: '+0.01%', positive: true, color: '#26a17b' },
+  { symbol: 'BNB', price: '375,100', change: '-0.45%', positive: false, color: '#f3ba2f' },
+  { symbol: 'SOL', price: '111,925', change: '+3.12%', positive: true, color: '#9945ff' },
+  { symbol: 'LTC', price: '63,525', change: '-1.23%', positive: false, color: '#b9b9b9' },
 ];
 
 const FEATURES = [
-  { icon: Shield, title: 'Sécurité Maximale', desc: 'Authentification 2FA, chiffrement de bout en bout, protection anti-fraude.' },
-  { icon: Zap, title: 'Transactions Rapides', desc: 'Confirmations en quelques secondes. Trading et échanges instantanés.' },
-  { icon: Globe, title: 'Mobile Money Intégré', desc: 'Orange Money, MTN, Wave, Moov. Dépôts et retraits en FCFA.' },
-  { icon: TrendingUp, title: 'Suivi en Temps Réel', desc: 'Graphiques live, prix en temps réel, portfolio en FCFA.' },
+  { icon: Shield, title: 'Sécurité 2FA', desc: 'Authentification à deux facteurs, chiffrement bout en bout.', color: '#6366f1' },
+  { icon: Zap, title: 'Échanges Instantanés', desc: 'Transactions confirmées en quelques secondes.', color: '#f59e0b' },
+  { icon: Globe, title: 'Mobile Money', desc: 'Orange, MTN, Wave, Moov, Airtel — dépôts en FCFA.', color: '#10b981' },
+  { icon: TrendingUp, title: 'Temps Réel', desc: 'Prix live, graphiques, portfolio en FCFA.', color: '#3b82f6' },
 ];
 
-const SUPPORTED_CRYPTOS = [
-  { symbol: 'BTC', color: '#f7931a' },
-  { symbol: 'ETH', color: '#627eea' },
-  { symbol: 'USDT', color: '#26a17b' },
-  { symbol: 'BNB', color: '#f3ba2f' },
-  { symbol: 'SOL', color: '#9945ff' },
-  { symbol: 'LTC', color: '#bfbbbb' },
+const CRYPTOS = [
+  { symbol: 'BTC', name: 'Bitcoin', color: '#f7931a', bg: '#fff7ed' },
+  { symbol: 'ETH', name: 'Ethereum', color: '#627eea', bg: '#eef2ff' },
+  { symbol: 'USDT', name: 'Tether', color: '#26a17b', bg: '#f0fdf4' },
+  { symbol: 'BNB', name: 'BNB', color: '#f3ba2f', bg: '#fffbeb' },
+  { symbol: 'SOL', name: 'Solana', color: '#9945ff', bg: '#faf5ff' },
+  { symbol: 'LTC', name: 'Litecoin', color: '#999', bg: '#f8fafc' },
+];
+
+const STEPS = [
+  { num: '01', title: 'Créer un compte', desc: 'Inscription rapide en 2 minutes avec vérification email.' },
+  { num: '02', title: 'Vérifier votre identité', desc: 'KYC simple : photo de pièce d\'identité depuis votre téléphone.' },
+  { num: '03', title: 'Déposer des fonds', desc: 'Via Orange Money, MTN, Wave ou virement bancaire en FCFA.' },
+  { num: '04', title: 'Trader librement', desc: 'Achetez, vendez, échangez vos cryptos en toute sécurité.' },
 ];
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-dots overflow-hidden" style={{ backgroundColor: '#080d1a' }}>
-      {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b" style={{ backgroundColor: 'rgba(8,13,26,0.8)', borderColor: 'rgba(255,255,255,0.05)' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2" style={{ textDecoration: 'none' }}>
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
-              <Bitcoin className="w-5 h-5 text-black" />
+    <div style={{ fontFamily: "'Inter', system-ui, sans-serif", backgroundColor: '#ffffff', color: '#0f172a' }}>
+
+      {/* ── NAV ── */}
+      <nav style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)',
+        borderBottom: '1px solid #e2e8f0', height: 64,
+        display: 'flex', alignItems: 'center',
+      }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', width: '100%', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: 'white', fontWeight: 900, fontSize: 16 }}>₿</span>
             </div>
-            <span className="text-xl font-black gradient-text">CryptoXchange</span>
+            <span style={{ fontWeight: 900, fontSize: 20, color: '#0f172a', letterSpacing: '-0.5px' }}>CryptoXchange</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
-            {['Marchés', 'Acheter', 'Échanger', 'À propos'].map((item) => (
-              <a key={item} href="#" className="text-sm font-medium transition-colors" style={{ color: '#94a3b8', textDecoration: 'none' }}
-                onMouseEnter={e => (e.target as HTMLElement).style.color = 'white'}
-                onMouseLeave={e => (e.target as HTMLElement).style.color = '#94a3b8'}
-              >
+          <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
+            {['Marchés', 'Acheter', 'Échanger', 'À propos'].map(item => (
+              <a key={item} href="#" style={{ fontSize: 14, fontWeight: 500, color: '#64748b', textDecoration: 'none', transition: 'color .2s' }}
+                onMouseEnter={e => ((e.target as HTMLElement).style.color = '#0f172a')}
+                onMouseLeave={e => ((e.target as HTMLElement).style.color = '#64748b')}>
                 {item}
               </a>
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
-            <Link href="/auth/login" className="btn-ghost text-sm">Se connecter</Link>
-            <Link href="/auth/register" className="btn-primary text-sm py-2 px-4">Créer un compte</Link>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+            <Link href="/auth/login" style={{
+              fontSize: 14, fontWeight: 600, color: '#0f172a', textDecoration: 'none',
+              padding: '8px 18px', borderRadius: 8, border: '1.5px solid #e2e8f0', transition: 'all .2s'
+            }}>Se connecter</Link>
+            <Link href="/auth/register" style={{
+              fontSize: 14, fontWeight: 600, color: 'white', textDecoration: 'none',
+              padding: '8px 18px', borderRadius: 8, background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              boxShadow: '0 2px 8px rgba(99,102,241,0.35)'
+            }}>Créer un compte</Link>
           </div>
         </div>
       </nav>
 
-      {/* Ticker Bar */}
-      <div className="fixed top-16 left-0 right-0 z-40 backdrop-blur-sm border-b py-2" style={{ backgroundColor: 'rgba(15,23,42,0.9)', borderColor: 'rgba(255,255,255,0.05)' }}>
-        <div className="ticker-wrap">
-          <div className="ticker">
-            {[...CRYPTO_TICKERS, ...CRYPTO_TICKERS].map((crypto, i) => (
-              <div key={i} className="flex items-center gap-2 px-6 text-sm whitespace-nowrap">
-                <span className="font-bold text-white">{crypto.symbol}</span>
-                <span style={{ color: '#94a3b8' }}>{crypto.price}</span>
-                <span style={{ color: crypto.positive ? '#10b981' : '#ef4444' }}>{crypto.change}</span>
-                <span style={{ color: '#334155' }} className="mx-2">|</span>
-              </div>
-            ))}
-          </div>
+      {/* ── TICKER ── */}
+      <div style={{
+        position: 'fixed', top: 64, left: 0, right: 0, zIndex: 99,
+        backgroundColor: '#0f172a', height: 36, overflow: 'hidden', display: 'flex', alignItems: 'center',
+      }}>
+        <div style={{ display: 'flex', animation: 'ticker 30s linear infinite', whiteSpace: 'nowrap' }}>
+          {[...CRYPTO_TICKERS, ...CRYPTO_TICKERS].map((c, i) => (
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 24px', fontSize: 12 }}>
+              <span style={{ fontWeight: 700, color: c.color }}>●</span>
+              <span style={{ fontWeight: 700, color: 'white' }}>{c.symbol}</span>
+              <span style={{ color: '#94a3b8' }}>{c.price} FCFA</span>
+              <span style={{ color: c.positive ? '#10b981' : '#ef4444', fontWeight: 600 }}>{c.change}</span>
+            </span>
+          ))}
         </div>
+        <style>{`@keyframes ticker { 0%{ transform: translateX(0) } 100%{ transform: translateX(-50%) } }`}</style>
       </div>
 
-      {/* Hero Section */}
-      <section className="pt-40 pb-20 px-4 relative">
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: 'rgba(245,158,11,0.05)' }} />
-        <div className="absolute top-40 left-1/4 w-[300px] h-[300px] rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: 'rgba(139,92,246,0.05)' }} />
-
-        <div className="max-w-7xl mx-auto text-center relative">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-8" style={{ backgroundColor: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', color: '#fbbf24' }}>
-              <Zap className="w-4 h-4" />
+      {/* ── HERO ── */}
+      <section style={{ paddingTop: 160, paddingBottom: 100, paddingLeft: 24, paddingRight: 24, background: 'linear-gradient(180deg, #f8f9ff 0%, #ffffff 100%)' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
+          <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7 }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px', borderRadius: 100,
+              background: '#eef2ff', color: '#6366f1', fontSize: 13, fontWeight: 600, marginBottom: 24,
+            }}>
+              <Star fill="#6366f1" className="w-3 h-3" style={{ width: 12, height: 12 }} />
               Plateforme #1 en Afrique de l'Ouest
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
-              Achetez, Vendez &<br />
-              <span className="gradient-text">Échangez des Cryptos</span>
+            <h1 style={{ fontSize: 56, fontWeight: 900, lineHeight: 1.08, letterSpacing: '-2px', marginBottom: 24, color: '#0f172a' }}>
+              Achetez.<br />
+              Vendez.<br />
+              <span style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                Échangez.
+              </span>
             </h1>
 
-            <p className="text-xl mb-10 max-w-2xl mx-auto leading-relaxed" style={{ color: '#cbd5e1' }}>
-              La plateforme crypto la plus sécurisée d'Afrique. Convertissez en FCFA, payez via Orange Money, MTN, Wave. Simple, rapide, sûr.
+            <p style={{ fontSize: 18, color: '#64748b', lineHeight: 1.65, marginBottom: 40, maxWidth: 480 }}>
+              La plateforme crypto sécurisée pour l'Afrique. Payez avec Orange Money, MTN, Wave en FCFA. Simple, rapide, fiable.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/auth/register" className="btn-primary text-lg py-4 px-8 gap-3">
-                Commencer maintenant
-                <ArrowRight className="w-5 h-5" />
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginBottom: 48 }}>
+              <Link href="/auth/register" style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none',
+                padding: '14px 28px', borderRadius: 12, fontWeight: 700, fontSize: 16,
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white',
+                boxShadow: '0 4px 20px rgba(99,102,241,0.4)', transition: 'transform .2s',
+              }}>
+                Commencer gratuitement <ArrowRight style={{ width: 18, height: 18 }} />
               </Link>
-              <Link href="/auth/login" className="btn-secondary text-lg py-4 px-8">
+              <Link href="/auth/login" style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none',
+                padding: '14px 28px', borderRadius: 12, fontWeight: 600, fontSize: 16,
+                border: '1.5px solid #e2e8f0', color: '#0f172a', background: 'white',
+              }}>
                 Se connecter
               </Link>
             </div>
+
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+              {['✓ Sans frais cachés', '✓ KYC rapide', '✓ Support 24/7'].map(t => (
+                <span key={t} style={{ fontSize: 13, color: '#64748b', fontWeight: 500 }}>{t}</span>
+              ))}
+            </div>
           </motion.div>
 
-          {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20 max-w-4xl mx-auto"
-          >
-            {[
-              { label: 'Utilisateurs actifs', value: '50K+' },
-              { label: 'Volume mensuel', value: '2.5B FCFA' },
-              { label: 'Cryptos supportées', value: '12+' },
-              { label: 'Pays couverts', value: '15+' },
-            ].map((stat) => (
-              <div key={stat.label} className="glass-card p-6 text-center">
-                <div className="text-3xl font-black gradient-text mb-1">{stat.value}</div>
-                <div className="text-sm" style={{ color: '#94a3b8' }}>{stat.label}</div>
+          {/* Dashboard card preview */}
+          <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.15 }}>
+            <div style={{
+              background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
+              borderRadius: 24, padding: 32, color: 'white', position: 'relative', overflow: 'hidden',
+              boxShadow: '0 32px 64px rgba(99,102,241,0.35)',
+            }}>
+              <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.07)' }} />
+              <div style={{ position: 'absolute', bottom: -40, left: -40, width: 160, height: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
+
+              <div style={{ position: 'relative', zIndex: 1 }}>
+                <p style={{ fontSize: 13, opacity: 0.8, marginBottom: 4 }}>Portefeuille total</p>
+                <p style={{ fontSize: 42, fontWeight: 900, letterSpacing: '-1px', marginBottom: 4 }}>1,248,500</p>
+                <p style={{ fontSize: 16, opacity: 0.8, marginBottom: 28 }}>FCFA</p>
+
+                <div style={{ display: 'flex', gap: 12, marginBottom: 28 }}>
+                  {[
+                    { label: 'Acheter', icon: '+' },
+                    { label: 'Vendre', icon: '↗' },
+                    { label: 'Swap', icon: '⇄' },
+                    { label: 'Dépôt', icon: '↓' },
+                  ].map(a => (
+                    <div key={a.label} style={{ flex: 1, textAlign: 'center' }}>
+                      <div style={{
+                        width: 44, height: 44, borderRadius: 12, background: 'rgba(255,255,255,0.15)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px',
+                        fontSize: 18, fontWeight: 700, backdropFilter: 'blur(8px)',
+                      }}>{a.icon}</div>
+                      <p style={{ fontSize: 11, opacity: 0.8 }}>{a.label}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {CRYPTO_TICKERS.slice(0, 3).map(c => (
+                  <div key={c.symbol} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', marginBottom: 8, borderRadius: 12, background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: '50%', background: c.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 900, color: '#0f172a' }}>{c.symbol[0]}</div>
+                      <span style={{ fontWeight: 600, fontSize: 14 }}>{c.symbol}</span>
+                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: c.positive ? '#86efac' : '#fca5a5' }}>{c.change}</span>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Supported Cryptos */}
-      <section className="py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-center text-3xl font-bold text-white mb-12">Cryptos Supportées</h2>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-            {SUPPORTED_CRYPTOS.map((crypto) => (
-              <motion.div
-                key={crypto.symbol}
-                whileHover={{ scale: 1.05, y: -4 }}
-                className="glass-card-hover p-6 text-center cursor-pointer"
-              >
-                <div
-                  className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center text-lg font-black text-black"
-                  style={{ backgroundColor: crypto.color }}
-                >
-                  {crypto.symbol[0]}
+      {/* ── STATS ── */}
+      <section style={{ padding: '64px 24px', borderTop: '1px solid #f1f5f9', borderBottom: '1px solid #f1f5f9' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+          {[
+            { value: '50K+', label: 'Utilisateurs actifs' },
+            { value: '2.5B', label: 'FCFA volume mensuel' },
+            { value: '12+', label: 'Cryptos supportées' },
+            { value: '5', label: 'Opérateurs Mobile Money' },
+          ].map((s, i) => (
+            <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }}
+              style={{ textAlign: 'center', padding: '32px 16px' }}>
+              <p style={{ fontSize: 40, fontWeight: 900, letterSpacing: '-1px', color: '#0f172a', marginBottom: 8 }}>{s.value}</p>
+              <p style={{ fontSize: 14, color: '#64748b' }}>{s.label}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── CRYPTOS ── */}
+      <section style={{ padding: '80px 24px', backgroundColor: '#f8f9ff' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <h2 style={{ fontSize: 40, fontWeight: 900, letterSpacing: '-1px', marginBottom: 12 }}>Cryptos Supportées</h2>
+            <p style={{ fontSize: 17, color: '#64748b' }}>Achetez et échangez les meilleures cryptomonnaies</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16 }}>
+            {CRYPTOS.map((c, i) => (
+              <motion.div key={c.symbol} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} viewport={{ once: true }}
+                whileHover={{ y: -4, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
+                style={{ background: 'white', borderRadius: 20, padding: '24px 16px', textAlign: 'center', border: '1.5px solid #f1f5f9', cursor: 'pointer', transition: 'all .2s' }}>
+                <div style={{ width: 52, height: 52, borderRadius: '50%', background: c.bg, border: `2px solid ${c.color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: 22, fontWeight: 900, color: c.color }}>
+                  {c.symbol[0]}
                 </div>
-                <div className="text-sm font-bold text-white">{crypto.symbol}</div>
+                <p style={{ fontWeight: 700, fontSize: 14, marginBottom: 2 }}>{c.symbol}</p>
+                <p style={{ fontSize: 12, color: '#94a3b8' }}>{c.name}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-20 px-4" style={{ backgroundColor: 'rgba(15,23,42,0.3)' }}>
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-black text-white mb-4">Pourquoi choisir CryptoXchange ?</h2>
-            <p className="text-lg" style={{ color: '#cbd5e1' }}>Conçu pour l'Afrique, sécurisé pour le monde</p>
+      {/* ── FEATURES ── */}
+      <section style={{ padding: '80px 24px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <h2 style={{ fontSize: 40, fontWeight: 900, letterSpacing: '-1px', marginBottom: 12 }}>Pourquoi CryptoXchange ?</h2>
+            <p style={{ fontSize: 17, color: '#64748b' }}>Conçu pour l'Afrique, sécurisé pour le monde</p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {FEATURES.map((feature, i) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                viewport={{ once: true }}
-                className="glass-card-hover p-8"
-              >
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style={{ backgroundColor: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.2)' }}>
-                  <feature.icon className="w-6 h-6" style={{ color: '#fbbf24' }} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+            {FEATURES.map((f, i) => (
+              <motion.div key={f.title} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} viewport={{ once: true }}
+                style={{ background: 'white', borderRadius: 20, padding: 32, border: '1.5px solid #f1f5f9', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                <div style={{ width: 52, height: 52, borderRadius: 14, background: `${f.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20 }}>
+                  <f.icon style={{ width: 24, height: 24, color: f.color }} />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: '#94a3b8' }}>{feature.desc}</p>
+                <h3 style={{ fontWeight: 800, fontSize: 17, marginBottom: 10 }}>{f.title}</h3>
+                <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.6 }}>{f.desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Mobile Money Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="glass-card p-12 text-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br pointer-events-none" style={{ background: 'linear-gradient(to bottom right, rgba(245,158,11,0.05), transparent)' }} />
-            <h2 className="text-4xl font-black text-white mb-4 relative">
-              Payez avec <span className="gradient-text">Mobile Money</span>
+      {/* ── HOW IT WORKS ── */}
+      <section style={{ padding: '80px 24px', backgroundColor: '#f8f9ff' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 56 }}>
+            <h2 style={{ fontSize: 40, fontWeight: 900, letterSpacing: '-1px', marginBottom: 12 }}>Commencer en 4 étapes</h2>
+            <p style={{ fontSize: 17, color: '#64748b' }}>Simple, rapide et sécurisé</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+            {STEPS.map((s, i) => (
+              <motion.div key={s.num} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.12 }} viewport={{ once: true }}
+                style={{ background: 'white', borderRadius: 20, padding: 32, border: '1.5px solid #e2e8f0', position: 'relative' }}>
+                <span style={{ fontSize: 40, fontWeight: 900, color: '#e2e8f0', letterSpacing: '-1px', display: 'block', marginBottom: 16 }}>{s.num}</span>
+                <h3 style={{ fontWeight: 800, fontSize: 16, marginBottom: 10 }}>{s.title}</h3>
+                <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.6 }}>{s.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── MOBILE MONEY ── */}
+      <section style={{ padding: '80px 24px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          <div style={{
+            borderRadius: 28, padding: '64px 48px', background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
+            display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center',
+          }}>
+            <div>
+              <p style={{ color: '#a5b4fc', fontSize: 13, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 16 }}>Mobile Money</p>
+              <h2 style={{ fontSize: 40, fontWeight: 900, color: 'white', letterSpacing: '-1px', lineHeight: 1.15, marginBottom: 20 }}>
+                Payez avec votre<br />
+                <span style={{ background: 'linear-gradient(90deg, #a5b4fc, #c084fc)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  téléphone
+                </span>
+              </h2>
+              <p style={{ fontSize: 16, color: '#94a3b8', lineHeight: 1.65, marginBottom: 36 }}>
+                Déposez et retirez directement via votre opérateur Mobile Money. Pas besoin de carte bancaire.
+              </p>
+              <Link href="/auth/register" style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none',
+                padding: '14px 28px', borderRadius: 12, fontWeight: 700, fontSize: 15,
+                background: 'white', color: '#0f172a', boxShadow: '0 4px 14px rgba(255,255,255,0.15)',
+              }}>
+                Créer un compte gratuit <ArrowRight style={{ width: 16, height: 16 }} />
+              </Link>
+            </div>
+            <div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                {[
+                  { name: 'Orange Money', color: '#ff6600', bg: 'rgba(255,102,0,0.15)' },
+                  { name: 'MTN MoMo', color: '#ffc107', bg: 'rgba(255,193,7,0.15)' },
+                  { name: 'Wave', color: '#0075ff', bg: 'rgba(0,117,255,0.15)' },
+                  { name: 'Moov Money', color: '#00b4d8', bg: 'rgba(0,180,216,0.15)' },
+                  { name: 'Airtel Money', color: '#e50914', bg: 'rgba(229,9,20,0.15)' },
+                  { name: 'Virement', color: '#10b981', bg: 'rgba(16,185,129,0.15)' },
+                ].map(p => (
+                  <div key={p.name} style={{
+                    background: p.bg, borderRadius: 14, padding: '16px 20px',
+                    display: 'flex', alignItems: 'center', gap: 10,
+                  }}>
+                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: p.color, flexShrink: 0 }} />
+                    <span style={{ color: 'white', fontSize: 13, fontWeight: 600 }}>{p.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section style={{ padding: '100px 24px', textAlign: 'center', backgroundColor: '#f8f9ff' }}>
+        <div style={{ maxWidth: 680, margin: '0 auto' }}>
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <h2 style={{ fontSize: 52, fontWeight: 900, letterSpacing: '-2px', lineHeight: 1.1, marginBottom: 20 }}>
+              Prêt à investir<br />
+              <span style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                dans les cryptos ?
+              </span>
             </h2>
-            <p className="text-lg mb-8 relative" style={{ color: '#cbd5e1' }}>
-              Orange Money, MTN Mobile Money, Wave, Moov Money, Airtel Money
+            <p style={{ fontSize: 18, color: '#64748b', marginBottom: 40, lineHeight: 1.65 }}>
+              Rejoignez +50 000 utilisateurs qui font confiance à CryptoXchange pour leurs investissements.
             </p>
-            <div className="flex flex-wrap justify-center gap-4 mb-8">
-              {['Orange Money', 'MTN Money', 'Wave', 'Moov Money', 'Airtel Money'].map((provider) => (
-                <div key={provider} className="px-4 py-2 rounded-xl text-white text-sm font-medium" style={{ backgroundColor: '#1e293b', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  {provider}
-                </div>
-              ))}
+            <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link href="/auth/register" style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none',
+                padding: '16px 36px', borderRadius: 14, fontWeight: 700, fontSize: 17,
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', color: 'white',
+                boxShadow: '0 8px 28px rgba(99,102,241,0.4)',
+              }}>
+                Créer mon compte — Gratuit <ChevronRight style={{ width: 20, height: 20 }} />
+              </Link>
             </div>
-            <Link href="/auth/register" className="btn-primary inline-flex">
-              Démarrer maintenant <ArrowRight className="w-4 h-4" />
-            </Link>
+            <p style={{ marginTop: 20, fontSize: 13, color: '#94a3b8' }}>Aucune carte bancaire requise · Inscription en 2 min</p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── FOOTER ── */}
+      <footer style={{ borderTop: '1px solid #e2e8f0', padding: '48px 24px', backgroundColor: 'white' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 32, height: 32, borderRadius: 9, background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: 'white', fontWeight: 900, fontSize: 15 }}>₿</span>
+            </div>
+            <span style={{ fontWeight: 900, fontSize: 18, color: '#0f172a' }}>CryptoXchange</span>
           </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl font-black text-white mb-6">
-            Prêt à commencer ?<br />
-            <span className="gradient-text">Créez votre compte gratuitement</span>
-          </h2>
-          <p className="text-xl mb-10" style={{ color: '#cbd5e1' }}>
-            Rejoignez +50 000 utilisateurs qui font confiance à CryptoXchange
-          </p>
-          <Link href="/auth/register" className="btn-primary text-xl py-5 px-12">
-            Créer mon compte <ChevronRight className="w-6 h-6" />
-          </Link>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t py-12 px-4" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
-                <Bitcoin className="w-5 h-5 text-black" />
-              </div>
-              <span className="text-xl font-black gradient-text">CryptoXchange</span>
-            </div>
-            <div className="text-sm" style={{ color: '#94a3b8' }}>
-              © 2024 CryptoXchange. Tous droits réservés. Plateforme sécurisée.
-            </div>
-            <div className="flex gap-6 text-sm">
-              {['CGU', 'Confidentialité', 'Support'].map((item) => (
-                <a key={item} href="#" style={{ color: '#94a3b8', textDecoration: 'none' }}>
-                  {item}
-                </a>
-              ))}
-            </div>
+          <p style={{ fontSize: 13, color: '#94a3b8' }}>© 2025 CryptoXchange. Tous droits réservés.</p>
+          <div style={{ display: 'flex', gap: 24 }}>
+            {['CGU', 'Confidentialité', 'Support'].map(item => (
+              <a key={item} href="#" style={{ fontSize: 13, color: '#64748b', textDecoration: 'none' }}>{item}</a>
+            ))}
           </div>
         </div>
       </footer>
+
     </div>
   );
 }

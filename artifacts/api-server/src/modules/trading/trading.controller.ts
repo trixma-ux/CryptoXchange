@@ -6,6 +6,22 @@ import { sendSuccess, sendError, calculateFee, MOCK_PRICES, FCFA_PER_USD } from 
 import { AuthRequest } from "../../middlewares/auth.js";
 import { config } from "../../lib/config.js";
 
+export const getUnifiedQuote = async (req: AuthRequest, res: Response) => {
+  const { type = "buy", currency, fiatAmount, cryptoAmount, fiatCurrency = "XOF" } = req.query as Record<string, string>;
+  if (type === "sell") return getSellQuote(req, res);
+  return getBuyQuote(req, res);
+};
+
+export const getHistory = async (req: AuthRequest, res: Response) => {
+  const { db } = await import("@workspace/db");
+  const { transactionsTable } = await import("@workspace/db");
+  const { eq, or, desc } = await import("drizzle-orm");
+  const rows = await db.select().from(transactionsTable)
+    .where(or(eq(transactionsTable.type, "TRADE_BUY"), eq(transactionsTable.type, "TRADE_SELL")))
+    .orderBy(desc(transactionsTable.createdAt)).limit(50);
+  return sendSuccess(res, rows, "Historique de trading récupéré");
+};
+
 export const getBuyQuote = async (req: AuthRequest, res: Response) => {
   const { currency, fiatAmount, fiatCurrency = "XOF" } = req.query as Record<string, string>;
   const priceUSD = MOCK_PRICES[currency];
