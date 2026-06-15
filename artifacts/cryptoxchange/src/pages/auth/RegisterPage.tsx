@@ -63,7 +63,7 @@ export default function RegisterPage() {
           <h1 className="text-2xl font-black text-white mb-2">Créer un compte 🚀</h1>
           <p className="mb-8" style={{ color: '#94a3b8' }}>Rejoignez +50 000 traders</p>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2" style={{ color: '#cbd5e1' }}>Prénom</label>
                 <input {...register('firstName')} placeholder="Jean" className="input-field" />
