@@ -1,0 +1,14 @@
+node_modules
+.next
+.env
+.env.local
+dev.db
+dev.db-journal
+dist
+build
+.vscode
+logs
+*.log
+*.tsbuildinfo
+uploads/*
+!uploads/.gitkeep
