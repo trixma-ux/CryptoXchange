@@ -2,9 +2,12 @@ import { Request, Response } from "express";
 import { db } from "@workspace/db";
 import {
   usersTable, transactionsTable, kycDocumentsTable, supportTicketsTable,
-  supportMessagesTable, feesTable, notificationsTable,
+  supportMessagesTable, feesTable, notificationsTable, walletsTable,
 } from "@workspace/db";
 import { eq, desc, sql, gte, and, or, ilike } from "drizzle-orm";
+import { creditPlatformFee, PLATFORM_FEES } from "../../lib/platform-fees.js";
+import { initCinetPayPayment } from "../../lib/cinetpay.js";
+import { MOCK_PRICES, FCFA_PER_USD } from "../../lib/helpers.js";
 import { sendSuccess, sendError } from "../../lib/helpers.js";
 import { AuthRequest } from "../../middlewares/auth.js";
 
@@ -245,4 +248,132 @@ export const resolveTicket = async (req: Request, res: Response) => {
   await db.update(supportTicketsTable).set({ status: "RESOLVED", updatedAt: new Date() })
     .where(eq(supportTicketsTable.id, req.params.ticketId));
   return sendSuccess(res, null, "Ticket résolu");
+};
+
+// ─── CAISSE ADMIN ────────────────────────────────────────────────────────────
+
+export const getCaisseSummary = async (_req: Request, res: Response) => {
+  const [poolResult, commissionsResult, pendingResult, recentTx] = await Promise.all([
+    // Pool = sum of completed DEPOSIT_FIAT (user deposits) - sum of completed WITHDRAWAL_FIAT
+    db.select({ total: sql<number>`coalesce(sum(fiat_amount::numeric),0)` })
+      .from(transactionsTable)
+      .where(and(eq(transactionsTable.type, "DEPOSIT_FIAT"), eq(transactionsTable.status, "COMPLETED"))),
+    // Commissions = sum of all FEE transactions (fiat_amount = FCFA value)
+    db.select({ total: sql<number>`coalesce(sum(fiat_amount::numeric),0)` })
+      .from(transactionsTable)
+      .where(and(eq(transactionsTable.type, "FEE"), eq(transactionsTable.status, "COMPLETED"))),
+    // Pending withdrawals requiring approval
+    db.select({ count: sql<number>`count(*)` })
+      .from(transactionsTable)
+      .where(eq(transactionsTable.status, "REQUIRES_APPROVAL")),
+    // Recent caisse transactions
+    db.select().from(transactionsTable)
+      .where(or(eq(transactionsTable.type, "DEPOSIT_FIAT"), eq(transactionsTable.type, "WITHDRAWAL_FIAT"), eq(transactionsTable.type, "FEE")))
+      .orderBy(desc(transactionsTable.createdAt)).limit(20),
+  ]);
+
+  const [withdrawalsResult] = await Promise.all([
+    db.select({ total: sql<number>`coalesce(sum(fiat_amount::numeric),0)` })
+      .from(transactionsTable)
+      .where(and(eq(transactionsTable.type, "WITHDRAWAL_FIAT"), eq(transactionsTable.status, "COMPLETED"))),
+  ]);
+
+  const totalDeposits = Number(poolResult[0]?.total || 0);
+  const totalWithdrawals = Number(withdrawalsResult[0]?.total || 0);
+  const poolBalance = totalDeposits - totalWithdrawals;
+  const totalCommissions = Number(commissionsResult[0]?.total || 0);
+  const pendingWithdrawals = Number(pendingResult[0]?.count || 0);
+
+  return sendSuccess(res, {
+    poolBalance,
+    totalDeposits,
+    totalWithdrawals,
+    totalCommissions,
+    pendingWithdrawals,
+    commissionRate: PLATFORM_FEES.deposit,
+    recentTransactions: recentTx,
+  }, "Résumé de la caisse récupéré");
+};
+
+export const caisseAdminDeposit = async (req: AuthRequest, res: Response) => {
+  const { amount, method = "bank_transfer", phoneNumber, provider = "orange_money" } = req.body;
+  const userId = req.user!.id;
+
+  if (!amount) return sendError(res, "Montant requis", 400);
+  const amountNum = parseFloat(amount);
+  if (isNaN(amountNum) || amountNum < 500) return sendError(res, "Montant minimum 500 FCFA", 400);
+
+  const [tx] = await db.insert(transactionsTable).values({
+    userId,
+    type: "DEPOSIT_FIAT",
+    status: "PENDING",
+    currency: "XOF",
+    amount: (amountNum / FCFA_PER_USD).toFixed(8),
+    fee: "0",
+    netAmount: (amountNum / FCFA_PER_USD).toFixed(8),
+    fiatCurrency: "XOF",
+    fiatAmount: amountNum.toString(),
+    exchangeRate: FCFA_PER_USD.toString(),
+    description: `[Caisse Admin] Alimentation via ${method}`,
+    metadata: { isCaisseDeposit: true, method, phoneNumber, provider },
+  }).returning();
+
+  let paymentUrl: string | undefined;
+  if (method === "mobile_money" && process.env.CINETPAY_API_KEY) {
+    try {
+      const r = await initCinetPayPayment({
+        transactionId: tx.id,
+        amount: amountNum,
+        currency: "XOF",
+        description: `Alimentation Caisse Admin CryptoXchange`,
+        customerPhone: phoneNumber,
+      });
+      paymentUrl = r.paymentUrl;
+      return sendSuccess(res, { transaction: tx, paymentUrl }, "Paiement CinetPay initié pour la caisse", 201);
+    } catch {}
+  }
+
+  // Bank/manual: mark as completed immediately (admin-controlled action)
+  await db.update(transactionsTable)
+    .set({ status: "COMPLETED", processedAt: new Date(), updatedAt: new Date() })
+    .where(eq(transactionsTable.id, tx.id));
+
+  return sendSuccess(res, { transaction: { ...tx, status: "COMPLETED" } },
+    `Caisse alimentée : ${amountNum.toLocaleString("fr-FR")} FCFA`, 201);
+};
+
+export const caisseWithdrawCommission = async (req: AuthRequest, res: Response) => {
+  const { amount, method = "mobile_money", phoneNumber, provider = "orange_money", bankName } = req.body;
+  const userId = req.user!.id;
+
+  if (!amount || !phoneNumber) return sendError(res, "Montant et numéro requis", 400);
+  const amountNum = parseFloat(amount);
+  if (isNaN(amountNum) || amountNum < 500) return sendError(res, "Montant minimum 500 FCFA", 400);
+
+  const [commissionsResult] = await db.select({ total: sql<number>`coalesce(sum(fiat_amount::numeric),0)` })
+    .from(transactionsTable)
+    .where(and(eq(transactionsTable.type, "FEE"), eq(transactionsTable.status, "COMPLETED")));
+
+  const totalCommissions = Number(commissionsResult?.total || 0);
+  if (amountNum > totalCommissions)
+    return sendError(res, `Solde commissions insuffisant (${totalCommissions.toFixed(0)} FCFA disponibles)`, 400);
+
+  const [tx] = await db.insert(transactionsTable).values({
+    userId,
+    type: "WITHDRAWAL_FIAT",
+    status: "COMPLETED",
+    currency: "XOF",
+    amount: (amountNum / FCFA_PER_USD).toFixed(8),
+    fee: "0",
+    netAmount: (amountNum / FCFA_PER_USD).toFixed(8),
+    fiatCurrency: "XOF",
+    fiatAmount: amountNum.toString(),
+    exchangeRate: FCFA_PER_USD.toString(),
+    description: `[Retrait Commission Admin] ${method === "mobile_money" ? `${provider} (${phoneNumber})` : bankName}`,
+    metadata: { isCommissionWithdrawal: true, method, phoneNumber, provider, bankName },
+    processedAt: new Date(),
+  }).returning();
+
+  return sendSuccess(res, { transaction: tx },
+    `Retrait commission de ${amountNum.toLocaleString("fr-FR")} FCFA enregistré`, 201);
 };

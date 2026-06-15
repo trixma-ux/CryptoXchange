@@ -68,7 +68,12 @@ export const mobileMoneyDeposit = async (req: AuthRequest, res: Response) => {
     if (err?.message !== "CINETPAY_NOT_CONFIGURED") {
       console.error("CinetPay error:", err?.message);
     }
-    // Fallback simulation (dev/test only — no real money moves)
+    // Fallback simulation — NEVER runs in production
+    if (process.env.NODE_ENV === "production") {
+      console.error("CinetPay init failed in production — transaction left PENDING, no auto-credit");
+      return sendSuccess(res, { transaction: tx, paymentUrl: undefined, useCinetPay: false, summary: {} },
+        "Paiement en attente. Contactez le support si le problème persiste.", 201);
+    }
     setTimeout(async () => {
       try {
         const wallets = await db.select().from(walletsTable)
@@ -110,7 +115,7 @@ export const cinetpayWebhook = async (req: Request, res: Response) => {
 
   try {
     const payment = await checkCinetPayPayment(cpm_trans_id);
-    if (payment.status !== "ACCEPTED" && cpm_result !== "00") {
+    if (payment.status !== "ACCEPTED") {
       await db.update(transactionsTable).set({ status: "FAILED", updatedAt: new Date() })
         .where(eq(transactionsTable.id, cpm_trans_id));
       return;

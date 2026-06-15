@@ -134,4 +134,7 @@ export const adminAPI = {
   updateFee: (data: any) => api.post('/admin/fees', data),
   getTickets: (params?: any) => api.get('/admin/support/tickets', { params }),
   replyTicket: (id: string, message: string) => api.post(`/admin/support/tickets/${id}/reply`, { message }),
+  getCaisseSummary: () => api.get('/admin/caisse/summary'),
+  caisseDeposit: (data: any) => api.post('/admin/caisse/deposit', data),
+  caisseWithdrawCommission: (data: any) => api.post('/admin/caisse/withdraw-commission', data),
 };

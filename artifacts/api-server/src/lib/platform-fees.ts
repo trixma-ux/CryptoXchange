@@ -3,10 +3,10 @@ import { eq, and } from "drizzle-orm";
 import { logger } from "./logger.js";
 
 export const PLATFORM_FEES = {
-  deposit: 1.0,
-  withdrawal: 0.5,
-  trading: 0.2,
-  swap: 0.2,
+  deposit: 2.0,
+  withdrawal: 2.0,
+  trading: 2.0,
+  swap: 2.0,
 };
 
 export async function creditPlatformFee(params: {

@@ -29,4 +29,8 @@ router.get("/support/tickets", ctrl.getSupportTickets);
 router.post("/support/tickets/:ticketId/reply", ctrl.adminReplyTicket);
 router.patch("/support/tickets/:ticketId/resolve", ctrl.resolveTicket);
 
+router.get("/caisse/summary", ctrl.getCaisseSummary);
+router.post("/caisse/deposit", ctrl.caisseAdminDeposit);
+router.post("/caisse/withdraw-commission", ctrl.caisseWithdrawCommission);
+
 export default router;

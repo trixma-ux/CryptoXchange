@@ -24,6 +24,7 @@ import AdminUsersPage from "@/pages/admin/AdminUsersPage";
 import AdminKycPage from "@/pages/admin/AdminKycPage";
 import AdminTransactionsPage from "@/pages/admin/AdminTransactionsPage";
 import AdminFeesPage from "@/pages/admin/AdminFeesPage";
+import AdminCaissePage from "@/pages/admin/AdminCaissePage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -90,6 +91,9 @@ function Router() {
       </Route>
       <Route path="/admin/fees">
         {() => <ProtectedRoute component={AdminFeesPage} adminOnly />}
+      </Route>
+      <Route path="/admin/caisse">
+        {() => <ProtectedRoute component={AdminCaissePage} adminOnly />}
       </Route>
 
       <Route component={NotFound} />
