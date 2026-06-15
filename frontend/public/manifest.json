@@ -1,0 +1,16 @@
+{
+  "name": "CryptoXchange",
+  "short_name": "CryptoXchange",
+  "description": "Plateforme d'échange de cryptomonnaies",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#080d1a",
+  "theme_color": "#f59e0b",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}
