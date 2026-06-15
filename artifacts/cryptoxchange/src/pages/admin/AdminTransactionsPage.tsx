@@ -55,8 +55,18 @@ function AdminLayout({ children, title }: { children: React.ReactNode; title?: s
 const STATUS_STYLES: Record<string, any> = {
   COMPLETED: { color: '#10b981', bg: 'rgba(16,185,129,0.15)', label: 'Complété' },
   PENDING: { color: '#f59e0b', bg: 'rgba(245,158,11,0.15)', label: 'En attente' },
+  REQUIRES_APPROVAL: { color: '#f59e0b', bg: 'rgba(245,158,11,0.15)', label: 'À approuver' },
   PROCESSING: { color: '#3b82f6', bg: 'rgba(59,130,246,0.15)', label: 'En cours' },
   FAILED: { color: '#ef4444', bg: 'rgba(239,68,68,0.15)', label: 'Échoué' },
+};
+
+const TYPE_LABELS: Record<string, string> = {
+  DEPOSIT_FIAT: 'Dépôt',
+  WITHDRAWAL_FIAT: 'Retrait',
+  TRADE_BUY: 'Achat',
+  TRADE_SELL: 'Vente',
+  SWAP: 'Swap',
+  FEE: 'Commission',
 };
 
 export default function AdminTransactionsPage() {
@@ -98,12 +108,19 @@ export default function AdminTransactionsPage() {
         </div>
       </div>
 
-      <div className="flex gap-2 mb-6">
-        {['ALL', 'DEPOSIT', 'WITHDRAWAL', 'BUY', 'SELL', 'SWAP'].map(t => (
-          <button key={t} onClick={() => { setTypeFilter(t); setPage(1); }}
+      <div className="flex gap-2 mb-6 flex-wrap">
+        {[
+          { val: 'ALL', label: 'Tout' },
+          { val: 'DEPOSIT_FIAT', label: 'Dépôts' },
+          { val: 'WITHDRAWAL_FIAT', label: 'Retraits' },
+          { val: 'TRADE_BUY', label: 'Achats' },
+          { val: 'TRADE_SELL', label: 'Ventes' },
+          { val: 'SWAP', label: 'Swaps' },
+        ].map(({ val, label }) => (
+          <button key={val} onClick={() => { setTypeFilter(val); setPage(1); }}
             className="px-4 py-2 rounded-xl text-sm font-medium transition-all"
-            style={{ background: typeFilter === t ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.03)', border: `1px solid ${typeFilter === t ? 'rgba(245,158,11,0.4)' : 'rgba(255,255,255,0.05)'}`, color: typeFilter === t ? '#fbbf24' : '#94a3b8', cursor: 'pointer' }}>
-            {t === 'ALL' ? 'Tout' : t}
+            style={{ background: typeFilter === val ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.03)', border: `1px solid ${typeFilter === val ? 'rgba(245,158,11,0.4)' : 'rgba(255,255,255,0.05)'}`, color: typeFilter === val ? '#fbbf24' : '#94a3b8', cursor: 'pointer' }}>
+            {label}
           </button>
         ))}
       </div>
@@ -136,16 +153,16 @@ export default function AdminTransactionsPage() {
                           <div className="text-xs" style={{ color: '#94a3b8' }}>{tx.user?.email}</div>
                         </td>
                         <td>
-                          <span className="font-semibold" style={{ color: tx.type === 'DEPOSIT' || tx.type === 'BUY' ? '#10b981' : '#ef4444' }}>
-                            {tx.type}
+                          <span className="font-semibold" style={{ color: (tx.type === 'DEPOSIT_FIAT' || tx.type === 'TRADE_BUY') ? '#10b981' : '#ef4444' }}>
+                            {TYPE_LABELS[tx.type] || tx.type}
                           </span>
                         </td>
                         <td className="font-mono text-white">{tx.amount} {tx.currency}</td>
-                        <td className="font-mono text-white">{formatCurrency(tx.amountXOF || 0)}</td>
+                        <td className="font-mono text-white">{formatCurrency(parseFloat(tx.fiatAmount || '0'))}</td>
                         <td><span className="badge" style={{ backgroundColor: st.bg, color: st.color }}>{st.label}</span></td>
                         <td style={{ color: '#94a3b8' }}>{new Date(tx.createdAt).toLocaleDateString('fr-FR')}</td>
                         <td>
-                          {tx.type === 'WITHDRAWAL' && tx.status === 'PENDING' && (
+                          {tx.type === 'WITHDRAWAL_FIAT' && tx.status === 'REQUIRES_APPROVAL' && (
                             <div className="flex gap-1">
                               <button onClick={() => handleReviewWithdrawal(tx.id, 'approve')} disabled={processing === tx.id}
                                 className="p-1.5 rounded-lg transition-colors" style={{ background: 'rgba(16,185,129,0.15)', border: 'none', cursor: 'pointer', color: '#10b981' }}>

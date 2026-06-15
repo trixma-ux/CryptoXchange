@@ -23,6 +23,7 @@ router.use(authenticate);
 
 router.get("/status", ctrl.getKycStatus);
 router.get("/documents", ctrl.getKycDocuments);
+router.get("/documents/:filename", ctrl.serveKycDocument);
 router.post("/upload", upload.single("file"), ctrl.uploadKycDocument);
 
 export default router;

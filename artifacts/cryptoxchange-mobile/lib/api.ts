@@ -93,8 +93,14 @@ export const walletsAPI = {
 
 export const tradingAPI = {
   getQuote: (params: any) => request("GET", `/trading/quote${buildQuery(params)}`),
-  buy: (data: any) => request("POST", "/trading/buy", data),
-  sell: (data: any) => request("POST", "/trading/sell", data),
+  getBuyQuote: (params: { currency: string; fiatAmount: number; fiatCurrency?: string }) =>
+    request("GET", `/trading/quote/buy${buildQuery(params)}`),
+  getSellQuote: (params: { currency: string; cryptoAmount: number; fiatCurrency?: string }) =>
+    request("GET", `/trading/quote/sell${buildQuery(params)}`),
+  buy: (data: { currency: string; fiatAmount: number; fiatCurrency?: string; paymentMethod?: string }) =>
+    request("POST", "/trading/buy", data),
+  sell: (data: { currency: string; cryptoAmount: number; fiatCurrency?: string }) =>
+    request("POST", "/trading/sell", data),
   getHistory: (params?: any) => request("GET", `/trading/history${buildQuery(params)}`),
 };
 

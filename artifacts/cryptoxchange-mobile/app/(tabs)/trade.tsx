@@ -42,6 +42,8 @@ export default function TradeScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("orange_money");
 
+  const currentPrice = prices[selectedCrypto.sym];
+
   useEffect(() => {
     pricesAPI.getPrices()
       .then(r => {
@@ -60,23 +62,30 @@ export default function TradeScreen() {
     const t = setTimeout(async () => {
       setLoadingQuote(true);
       try {
-        const r = await tradingAPI.getQuote({
-          currency: selectedCrypto.sym,
-          amountXOF: Number(amount),
-          side: mode.toUpperCase(),
-        });
+        let r;
+        if (mode === "buy") {
+          r = await tradingAPI.getBuyQuote({ currency: selectedCrypto.sym, fiatAmount: Number(amount) });
+        } else {
+          // For sell: user enters FCFA, convert to crypto using current price
+          const priceFCFA = currentPrice?.priceFCFA || 1;
+          const cryptoAmt = parseFloat((Number(amount) / priceFCFA).toFixed(8));
+          r = await tradingAPI.getSellQuote({ currency: selectedCrypto.sym, cryptoAmount: cryptoAmt });
+        }
         setQuote(r.data?.data);
       } catch { setQuote(null); } finally { setLoadingQuote(false); }
     }, 700);
     return () => clearTimeout(t);
-  }, [amount, selectedCrypto, mode]);
+  }, [amount, selectedCrypto, mode, currentPrice]);
 
   const handleSubmit = async () => {
     if (!quote) return;
     setSubmitting(true);
     try {
-      const fn = mode === "buy" ? tradingAPI.buy : tradingAPI.sell;
-      await fn({ currency: selectedCrypto.sym, amountXOF: quote.amountXOF, paymentMethod });
+      if (mode === "buy") {
+        await tradingAPI.buy({ currency: selectedCrypto.sym, fiatAmount: quote.fiatAmount, paymentMethod });
+      } else {
+        await tradingAPI.sell({ currency: selectedCrypto.sym, cryptoAmount: quote.cryptoAmount });
+      }
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Alert.alert("Succès !", mode === "buy" ? `${selectedCrypto.sym} acheté avec succès !` : `${selectedCrypto.sym} vendu avec succès !`);
       setAmount("");
@@ -87,7 +96,6 @@ export default function TradeScreen() {
     } finally { setSubmitting(false); }
   };
 
-  const currentPrice = prices[selectedCrypto.sym];
   const s = styles(colors);
   const isWeb = Platform.OS === "web";
   const topPad = isWeb ? 67 : insets.top;
@@ -189,20 +197,24 @@ export default function TradeScreen() {
               <>
                 <Text style={s.quoteTitle}>Récapitulatif</Text>
                 <View style={s.quoteRow}>
-                  <Text style={s.quoteLabel}>Montant</Text>
-                  <Text style={s.quoteValue}>{formatXOF(quote.amountXOF)} FCFA</Text>
+                  <Text style={s.quoteLabel}>{mode === "buy" ? "Vous payez" : "Vous recevez"}</Text>
+                  <Text style={s.quoteValue}>{formatXOF(quote.fiatAmount || 0)} FCFA</Text>
                 </View>
                 <View style={s.quoteRow}>
                   <Text style={s.quoteLabel}>{mode === "buy" ? "Vous recevez" : "Vous vendez"}</Text>
-                  <Text style={[s.quoteValue, { color: selectedCrypto.color }]}>{quote.cryptoAmount} {selectedCrypto.sym}</Text>
+                  <Text style={[s.quoteValue, { color: selectedCrypto.color }]}>
+                    {typeof quote.cryptoAmount === "number" ? quote.cryptoAmount.toFixed(8) : quote.cryptoAmount} {selectedCrypto.sym}
+                  </Text>
                 </View>
                 <View style={s.quoteRow}>
-                  <Text style={s.quoteLabel}>Frais</Text>
-                  <Text style={s.quoteValue}>{formatXOF(quote.feeXOF || 0)} FCFA</Text>
+                  <Text style={s.quoteLabel}>Frais (2%)</Text>
+                  <Text style={s.quoteValue}>
+                    {formatXOF(Math.round((quote.fee || 0) * (currentPrice?.priceFCFA ? 1 / (currentPrice.priceUSD || 1) * currentPrice.priceFCFA : 600)))} FCFA
+                  </Text>
                 </View>
                 <View style={[s.quoteRow, { borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 12, marginTop: 4 }]}>
                   <Text style={[s.quoteLabel, { fontFamily: "Inter_700Bold", color: colors.foreground }]}>Total</Text>
-                  <Text style={[s.quoteValue, { fontFamily: "Inter_700Bold", color: colors.foreground }]}>{formatXOF(quote.totalXOF || quote.amountXOF)} FCFA</Text>
+                  <Text style={[s.quoteValue, { fontFamily: "Inter_700Bold", color: colors.foreground }]}>{formatXOF(quote.fiatAmount || 0)} FCFA</Text>
                 </View>
               </>
             )}
