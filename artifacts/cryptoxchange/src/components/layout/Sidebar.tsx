@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'wouter';
-import { LayoutDashboard, Wallet, ArrowLeftRight, Repeat, Download, Upload, History, UserCircle, LifeBuoy, LogOut, Settings, X } from 'lucide-react';
+import { LayoutDashboard, Wallet, ArrowLeftRight, Repeat, Download, Upload, History, UserCircle, LifeBuoy, LogOut, Settings, X, ShieldCheck } from 'lucide-react';
 import { useAuthStore } from '@/lib/store';
 import { authAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
 ];
 
 const SECONDARY_NAV = [
+  { href: '/dashboard/kyc', label: 'Vérification KYC', icon: ShieldCheck },
   { href: '/dashboard/profile', label: 'Profil & Sécurité', icon: UserCircle },
   { href: '/dashboard/support', label: 'Support', icon: LifeBuoy },
 ];

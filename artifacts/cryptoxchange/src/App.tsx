@@ -17,6 +17,7 @@ import WithdrawPage from "@/pages/dashboard/WithdrawPage";
 import TransactionsPage from "@/pages/dashboard/TransactionsPage";
 import ProfilePage from "@/pages/dashboard/ProfilePage";
 import SupportPage from "@/pages/dashboard/SupportPage";
+import KycPage from "@/pages/dashboard/KycPage";
 
 import AdminDashboardPage from "@/pages/admin/AdminDashboard";
 import AdminUsersPage from "@/pages/admin/AdminUsersPage";
@@ -70,6 +71,9 @@ function Router() {
       </Route>
       <Route path="/dashboard/support">
         {() => <ProtectedRoute component={SupportPage} />}
+      </Route>
+      <Route path="/dashboard/kyc">
+        {() => <ProtectedRoute component={KycPage} />}
       </Route>
 
       <Route path="/admin/dashboard">

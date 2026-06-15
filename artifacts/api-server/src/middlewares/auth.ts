@@ -38,7 +38,7 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
 export const requireKyc = (req: AuthRequest, res: Response, next: NextFunction) => {
   const role = req.user?.role;
   if (role === "ADMIN" || role === "SUPER_ADMIN") return next();
-  if (req.user?.kycStatus !== "VERIFIED") {
+  if (req.user?.kycStatus !== "APPROVED") {
     return res.status(403).json({
       success: false,
       message: "Vérification KYC requise pour effectuer des transactions.",

@@ -33,7 +33,8 @@ app.use(cors({ origin: "*", credentials: true, methods: ["GET", "POST", "PUT", "
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-app.use("/uploads", express.static("./uploads"));
+// Public static (non-sensitive) uploads only — KYC documents served via authenticated endpoint
+app.use("/uploads/public", express.static("./uploads/public"));
 
 const API = "/api/v1";
 app.use(`${API}/auth`, authRoutes);

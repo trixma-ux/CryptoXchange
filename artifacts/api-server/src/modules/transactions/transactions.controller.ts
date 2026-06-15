@@ -42,11 +42,24 @@ export const createCryptoDeposit = async (req: AuthRequest, res: Response) => {
   const { currency, amount, txHash, network } = req.body;
   const userId = req.user!.id;
 
+  if (!currency) return sendError(res, "Cryptomonnaie requise", 400);
+
   const wallets = await db.select().from(walletsTable)
     .where(and(eq(walletsTable.userId, userId), eq(walletsTable.currency, currency))).limit(1);
   if (wallets.length === 0) return sendError(res, "Wallet introuvable", 404);
 
+  // If no amount provided, just return the deposit address (frontend "Obtenir l'adresse" flow)
+  if (!amount) {
+    return sendSuccess(res, {
+      address: wallets[0].address,
+      currency,
+      network: network || currency,
+    }, `Adresse de dépôt ${currency}`);
+  }
+
   const amountNum = parseFloat(amount);
+  if (isNaN(amountNum) || amountNum <= 0) return sendError(res, "Montant invalide", 400);
+
   const [tx] = await db.insert(transactionsTable).values({
     userId, type: "DEPOSIT_CRYPTO", status: "PENDING", currency,
     amount: amountNum.toString(), fee: "0", netAmount: amountNum.toString(),
